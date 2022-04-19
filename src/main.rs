@@ -3,6 +3,18 @@
 
 use gba::prelude::*;
 
+#[derive(Copy, Clone)]
+struct Vector2 {
+    x: i32,
+    y: i32
+}
+
+impl Vector2 {
+    fn new(x:i32, y:i32) -> Self {
+        return Vector2{x: x, y: y};
+    }
+}
+
 #[panic_handler]
 #[allow(unused)]
 fn panic(info: &core::panic::PanicInfo) -> ! {
@@ -36,34 +48,12 @@ pub fn spin_until_vdraw() {
 pub fn main() -> ! {
   const SETTING: DisplayControl = DisplayControl::new().with_display_mode(3).with_display_bg2(true);
   DISPCNT.write(SETTING);
-  // Create default RNG
-  let mut rng = RNG::default();
 
-  let mut px: usize = 0;
-  let mut py: usize = 0;
-  let mut color;
+
 
   loop {
-    // Generate color from RNG
-    color = rng.next_color();
-    // now we wait
     spin_until_vblank();
-    // Draw pixels to screen
-    mode3::bitmap_xy(px, py).write(color);
-    mode3::bitmap_xy(px, py + 1).write(color);
-    mode3::bitmap_xy(px + 1, py).write(color);
-    mode3::bitmap_xy(px + 1, py + 1).write(color);
-    // Increment x and y, wrap as needed
-    px += 2;
-    if px >= mode3::WIDTH {
-      px = 0;
-      py += 2;
-      if py >= mode3::HEIGHT {
-        py = 0;
-      }
-    }
-
-    // now we wait again
+    mode3::bitmap_xy(0, 0).write(Color::from_rgb(0, 255, 0));
     spin_until_vdraw();
   }
 }
